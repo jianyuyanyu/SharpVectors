@@ -510,7 +510,7 @@ namespace WpfTestSvgControl
             //drawingContext.PushOpacity(0.5);
 
             var drawingLayer = _drawingDocument.GetDrawingLayer();
-
+            Transform inheritedTransform = Transform.Identity;
             for (int i = 0; i < drawings.Count; i++)
             {
                 var drawing = drawings[i];
@@ -528,7 +528,21 @@ namespace WpfTestSvgControl
                 if (drawings.Count == hitPaths.Count)
                 {
                     var hitPath = hitPaths[i];
-                    drawingContext.PushTransform(hitPath.GetTransform(_drawingDocument, drawing));
+                    TransformGroup transforms = new TransformGroup();
+                    transforms.Children.Add((Transform)_drawingDocument.DisplayTransform);
+                    if (i == 0)
+                    {
+                        inheritedTransform = hitPath.GetTransform(_drawingDocument, drawing);
+                        transforms.Children.Add(inheritedTransform);
+                    }
+                    else
+                    {
+                        transforms.Children.Add((Transform)inheritedTransform.Inverse);
+                        transforms.Children.Add(hitPath.GetTransform(_drawingDocument, drawing));
+                        transforms.Children.Add((Transform)inheritedTransform);
+                    }
+                    transforms.Children.Add((Transform)_drawingDocument.DisplayTransform.Inverse);
+                    drawingContext.PushTransform(transforms); 
                 }
                 else
                 {

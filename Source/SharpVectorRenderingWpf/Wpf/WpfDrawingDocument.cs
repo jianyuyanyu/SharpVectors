@@ -616,7 +616,7 @@ namespace SharpVectors.Renderers.Wpf
                 {
                     if (path.FillContains(pt, 1, ToleranceType.Absolute))
                     {
-                        return true;
+                        return false;
                     }
 
                     //PathFigureCollection pathFigures = path.Figures;
