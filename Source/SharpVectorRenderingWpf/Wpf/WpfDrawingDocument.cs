@@ -594,7 +594,17 @@ namespace SharpVectors.Renderers.Wpf
             }
             return false;
         }
-
+        private bool IsPathGeometryClosed(PathGeometry path)
+        {
+            foreach (var figure in path.Figures)
+            {
+                if (!figure.IsClosed)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         private bool HitTestDrawing(GeometryDrawing drawing, Point pt)
         {
             Pen pen = drawing.Pen;
@@ -614,9 +624,9 @@ namespace SharpVectors.Renderers.Wpf
 
                 if (TryCast.Cast(geometry, out path))
                 {
-                    if (path.FillContains(pt, 1, ToleranceType.Absolute))
+                    if (IsPathGeometryClosed(path) && path.FillContains(pt, 1, ToleranceType.Absolute))
                     {
-                        return false;
+                        return true;
                     }
 
                     //PathFigureCollection pathFigures = path.Figures;
